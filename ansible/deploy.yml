@@ -1,27 +1,12 @@
 ---
-- name: Deploy scicalc python container
+- name: Deploy Scientific Calculator container
   hosts: local
-  become: true
-  vars:
-    container_name: scicalc_py
   tasks:
-    - name: Pull image
-      community.docker.docker_image:
-        name: "{{ image }}"
-        source: pull
+    - name: Pull latest Docker image
+      command: docker pull adarshareddy69/scicalc:latest
 
-    - name: Remove old container
-      community.docker.docker_container:
-        name: "{{ container_name }}"
-        state: absent
-        force_kill: true
-      ignore_errors: true
+    - name: Stop old container if running
+      command: docker rm -f scicalc || true
 
-    - name: Run new container
-      community.docker.docker_container:
-        name: "{{ container_name }}"
-        image: "{{ image }}"
-        state: started
-        detach: true
-        restart_policy: unless-stopped
-        command: tail -f /dev/null
+    - name: Run container
+      command: docker run -d --name scicalc adarshareddy69/scicalc:latest

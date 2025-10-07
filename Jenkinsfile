@@ -1,41 +1,40 @@
 pipeline {
-  agent any
-  environment {
-    DOCKERHUB_CREDS = 'dockerhub-creds'
-    DOCKER_IMAGE = "yourdockerhubusername/scicalc-py:${env.BUILD_NUMBER}"
-  }
-  stages {
-    stage('Checkout') {
-      steps { checkout scm }
+    agent any
+
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
     }
-    stage('Test') {
-      steps {
-        sh 'pip install -r requirements.txt'
-        sh 'pytest -v'
-      }
-    }
-    stage('Docker Build') {
-      steps {
-        sh "docker build -t ${DOCKER_IMAGE} ."
-      }
-    }
-    stage('Docker Push') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDS}", usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
-          sh "echo $DH_PASS | docker login -u $DH_USER --password-stdin"
-          sh "docker push ${DOCKER_IMAGE}"
+
+    stages {
+        stage('Checkout') {
+            steps { checkout scm }
         }
-      }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'PYTHONPATH=. pytest -v tests/'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t adarshareddy69/scicalc:latest .'
+            }
+        }
+
+        stage('Push Docker Hub') {
+            steps {
+                sh '''
+                echo "$DOCKERHUB_CREDENTIALS_PSW" | docker login -u "$DOCKERHUB_CREDENTIALS_USR" --password-stdin
+                docker push adarshareddy69/scicalc:latest
+                '''
+            }
+        }
     }
-    stage('Deploy via Ansible') {
-      steps {
-        sh "ansible-playbook ansible/deploy.yml -i ansible/inventory/hosts --extra-vars 'image=${DOCKER_IMAGE}'"
-      }
-    }
-  }
-  post {
-    always {
-      sh 'docker logout || true'
-    }
-  }
 }
