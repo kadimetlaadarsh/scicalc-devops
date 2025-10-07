@@ -1,2 +1,2 @@
 # scicalc-devops
-scintific calculator using devops doen by adarsha
+scintific calculator using devops doen by adarshaReddy
