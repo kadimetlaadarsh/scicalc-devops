@@ -7,30 +7,30 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps { checkout scm }
+            steps { 
+                checkout scm 
+            }
         }
 
         stage('Install Dependencies') {
             steps {
                 sh '''
                 python3 -m venv venv
-                source venv/bin/activate
+                . venv/bin/activate
                 pip install --upgrade pip
                 pip install -r requirements.txt
                 '''
             }
         }
 
-
         stage('Run Tests') {
             steps {
                 sh '''
-                source venv/bin/activate
+                . venv/bin/activate
                 PYTHONPATH=. pytest -v tests/
                 '''
             }
         }
-
 
         stage('Build Docker Image') {
             steps {
