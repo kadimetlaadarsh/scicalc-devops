@@ -29,7 +29,7 @@ pipeline {
                 // Activate venv and run tests
                 sh '''
                 . venv/bin/activate
-                PYTHONPATH=. pytest -v tests/
+                PYTHONPATH=. python -m pytest -v tests/
                 '''
             }
         }
