@@ -12,15 +12,25 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh '''
+                python3 -m venv venv
+                source venv/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                '''
             }
         }
 
+
         stage('Run Tests') {
             steps {
-                sh 'PYTHONPATH=. pytest -v tests/'
+                sh '''
+                source venv/bin/activate
+                PYTHONPATH=. pytest -v tests/
+                '''
             }
         }
+
 
         stage('Build Docker Image') {
             steps {
