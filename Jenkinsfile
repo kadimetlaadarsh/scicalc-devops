@@ -14,17 +14,19 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
+                // Create venv if not exists and install dependencies
                 sh '''
-                python3 -m venv venv
+                python3 -m venv venv || true
                 . venv/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
+                pip install --upgrade pip --break-system-packages
+                pip install -r requirements.txt --break-system-packages
                 '''
             }
         }
 
         stage('Run Tests') {
             steps {
+                // Activate venv and run tests
                 sh '''
                 . venv/bin/activate
                 PYTHONPATH=. pytest -v tests/
