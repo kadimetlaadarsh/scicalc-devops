@@ -53,29 +53,28 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                # Create and activate Ansible virtual environment
+                # Create a virtual environment for Ansible
                 python3 -m venv venv_ansible || true
                 . venv_ansible/bin/activate
 
-                # Upgrade pip
-                pip install --upgrade pip
+                # Upgrade pip inside the venv
+                pip install --upgrade pip --break-system-packages
 
-                # Install latest Ansible (supports Python 3.12)
-                pip install ansible
+                # Install Ansible and Docker SDK inside venv
+                pip install ansible==7.9.0 community.docker --break-system-packages
 
-                # Install Docker collection via Ansible Galaxy
-                ansible-galaxy collection install community.docker
-
-                # Run the deployment playbook
-                ansible-playbook -i inventory.ini deploy.yml \
+                # Run the deployment playbook (note the path change)
+                ansible-playbook -i scicalc/ansible/inventory.ini scicalc/ansible/deploy.yml \
                     -e "image=adarshareddy69/scicalc:latest" \
                     -e "container_name=sci_calculator" \
                     -e "command='python main.py --op sqrt --x 16'"
 
+                # Deactivate venv
                 deactivate
                 '''
             }
         }
-   
+
+        
     }
 }
