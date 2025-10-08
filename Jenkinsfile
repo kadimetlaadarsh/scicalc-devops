@@ -53,27 +53,19 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                # Create or reuse a virtual environment for Ansible
                 python3 -m venv venv_ansible || true
                 . venv_ansible/bin/activate
-
-                # Upgrade pip inside the virtual environment
                 pip install --upgrade pip
-
-                # Install Ansible (compatible with Python 3.12) and Docker SDK
-                pip install ansible==8.13.0 community.docker
-
-                # Run the deployment playbook
+                pip install ansible community.docker
                 ansible-playbook -i inventory.ini deploy.yml \
                     -e "image=adarshareddy69/scicalc:latest" \
                     -e "container_name=sci_calculator" \
                     -e "command='python main.py --op sqrt --x 16'"
-
-                # Deactivate the virtual environment
                 deactivate
                 '''
             }
         }
+
 
         
     }
