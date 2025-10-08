@@ -38,7 +38,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t adarshareddy69/scicalc:latest .'
+                sh 'docker -H unix:///var/run/docker.sock build -t adarshareddy69/scicalc:latest .'
             }
         }
 
