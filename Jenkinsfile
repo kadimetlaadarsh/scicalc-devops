@@ -53,16 +53,27 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                # Ensure ansible is installed on Jenkins agent
-                pip install --user ansible==7.9.0 community.docker
+                # Create a virtual environment for Ansible
+                python3 -m venv venv_ansible || true
+                . venv_ansible/bin/activate
 
-                # Run deployment playbook
+                # Upgrade pip inside the venv
+                pip install --upgrade pip --break-system-packages
+
+                # Install Ansible and Docker SDK inside venv
+                pip install ansible==7.9.0 community.docker --break-system-packages
+
+                # Run the deployment playbook
                 ansible-playbook -i inventory.ini deploy.yml \
-                    -e "image=${IMAGE_NAME}" \
-                    -e "container_name=${CONTAINER_NAME}" \
+                    -e "image=adarshareddy69/scicalc:latest" \
+                    -e "container_name=sci_calculator" \
                     -e "command='python main.py --op sqrt --x 16'"
+
+                # Deactivate venv
+                deactivate
                 '''
             }
         }
+        
     }
 }
