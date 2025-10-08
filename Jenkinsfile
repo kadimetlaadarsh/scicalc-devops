@@ -3,8 +3,9 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('docker_hub')
-        DOCKER_HOST = "unix:///home/adarsha/.docker/desktop/docker.sock"
+        DOCKER_HOST = "unix:///home/adarsha/.docker/desktop/docker-desktop-build.sock"
     }
+
 
     stages {
         stage('Checkout') {
