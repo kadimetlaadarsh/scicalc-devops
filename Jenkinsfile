@@ -3,9 +3,10 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('docker_hub')
-        DOCKER_HOST = "unix:///home/adarsha/.docker/desktop/docker-desktop-build.sock"
+        DOCKER_HOST = "unix:///var/run/docker.sock"  // default Docker socket
+        IMAGE_NAME = "adarshareddy69/scicalc:latest"
+        CONTAINER_NAME = "scicalc"
     }
-
 
     stages {
         stage('Checkout') {
@@ -16,7 +17,6 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                // Create venv if not exists and install dependencies
                 sh '''
                 python3 -m venv venv || true
                 . venv/bin/activate
@@ -28,7 +28,6 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                // Activate venv and run tests
                 sh '''
                 . venv/bin/activate
                 PYTHONPATH=. python -m pytest -v tests/
@@ -38,18 +37,32 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker -H unix:///var/run/docker.sock build -t adarshareddy69/scicalc:latest .'
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
 
         stage('Push Docker Hub') {
             steps {
                 sh '''
-                echo "$DOCKERHUB_CREDENTIALS_PSW" | docker -H unix:///var/run/docker.sock login -u "$DOCKERHUB_CREDENTIALS_USR" --password-stdin
-                docker -H unix:///var/run/docker.sock push adarshareddy69/scicalc:latest
+                echo "$DOCKERHUB_CREDENTIALS_PSW" | docker login -u "$DOCKERHUB_CREDENTIALS_USR" --password-stdin
+                docker push ${IMAGE_NAME}
                 '''
             }
         }
 
+        stage('Deploy') {
+            steps {
+                sh '''
+                # Ensure ansible is installed on Jenkins agent
+                pip install --user ansible==7.9.0 community.docker
+
+                # Run deployment playbook
+                ansible-playbook -i inventory.ini deploy.yml \
+                    -e "image=${IMAGE_NAME}" \
+                    -e "container_name=${CONTAINER_NAME}" \
+                    -e "command='python main.py --op sqrt --x 16'"
+                '''
+            }
+        }
     }
 }

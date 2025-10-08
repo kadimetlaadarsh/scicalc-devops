@@ -1,12 +1,38 @@
----
-- name: Deploy Scientific Calculator container
-  hosts: local
+- hosts: local
+  become: yes
+  vars:
+    container_name: scicalc
+    image: adarshareddy69/scicalc:latest
+    command: "python main.py --op sqrt --x 16"  # optional, remove if container runs by default
   tasks:
-    - name: Pull latest Docker image
-      command: docker pull adarshareddy69/scicalc:latest
+    - name: Ensure python3-pip is present (for docker SDK)
+      apt:
+        name: python3-pip
+        state: present
+      when: ansible_os_family == "Debian"
 
-    - name: Stop old container if running
-      command: docker rm -f scicalc || true
+    - name: Install docker Python SDK
+      pip:
+        name: docker
 
-    - name: Run container
-      command: docker run -d --name scicalc adarshareddy69/scicalc:latest
+    - name: Pull the image from Docker Hub
+      community.docker.docker_image:
+        name: "{{ image }}"
+        source: pull
+
+    - name: Stop and remove old container if exists
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        state: absent
+        force_kill: yes
+        keep_volumes: no
+
+    - name: Run the new container
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        image: "{{ image }}"
+        state: started
+        restart_policy: unless-stopped
+        command: "{{ command }}"
+        ports:
+          - "5000:5000"  # adjust if needed
