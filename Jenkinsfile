@@ -61,7 +61,7 @@ pipeline {
                 pip install --upgrade pip --break-system-packages
 
                 # Install Ansible and Docker SDK inside venv
-                pip install ansible==7.9.0 community.docker --break-system-packages
+                pip install ansible community.docker --break-system-packages
 
                 # Run the deployment playbook (note the path change)
                 ansible-playbook -i scicalc/ansible/inventory.ini scicalc/ansible/deploy.yml \
@@ -74,6 +74,7 @@ pipeline {
                 '''
             }
         }
+
 
         
     }
