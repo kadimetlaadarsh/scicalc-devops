@@ -1,5 +1,5 @@
 - hosts: local
-  become: yes
+  become: false
   vars:
     container_name: scicalc
     image: adarshareddy69/scicalc:latest
