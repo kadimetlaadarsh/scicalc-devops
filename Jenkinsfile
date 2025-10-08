@@ -45,10 +45,11 @@ pipeline {
         stage('Push Docker Hub') {
             steps {
                 sh '''
-                echo "$DOCKERHUB_CREDENTIALS_PSW" | docker login -u "$DOCKERHUB_CREDENTIALS_USR" --password-stdin
-                docker push adarshareddy69/scicalc:latest
+                echo "$DOCKERHUB_CREDENTIALS_PSW" | docker -H unix:///var/run/docker.sock login -u "$DOCKERHUB_CREDENTIALS_USR" --password-stdin
+                docker -H unix:///var/run/docker.sock push adarshareddy69/scicalc:latest
                 '''
             }
         }
+
     }
 }
