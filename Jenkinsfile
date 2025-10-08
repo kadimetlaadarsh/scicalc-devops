@@ -66,7 +66,7 @@ pipeline {
 
 
                 # Run the deployment playbook (note the path change)
-                ansible-playbook -i scicalc/ansible/inventory.ini scicalc/ansible/deploy.yml \
+                ansible-playbook -i ansible/inventory.ini ansible/deploy.yml \
                     -e "image=adarshareddy69/scicalc:latest" \
                     -e "container_name=sci_calculator" \
                     -e "command='python main.py --op sqrt --x 16'"
