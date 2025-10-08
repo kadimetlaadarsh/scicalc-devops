@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('docker_hub')
+        DOCKER_HOST = "unix:///home/adarsha/.docker/desktop/docker-cli.sock"
     }
 
     stages {
