@@ -3,7 +3,7 @@
   vars:
     container_name: scicalc
     image: adarshareddy69/scicalc:latest
-    command: "python main.py --op sqrt --x 16"  # optional, remove if container runs by default
+
   tasks:
     - name: Ensure python3-pip is present (for docker SDK)
       apt:
@@ -32,7 +32,5 @@
         name: "{{ container_name }}"
         image: "{{ image }}"
         state: started
-        restart_policy: unless-stopped
-        command: "{{ command }}"
         ports:
-          - "5000:5000"  # adjust if needed
+          - "5000:5000"
