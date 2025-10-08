@@ -27,10 +27,12 @@
         force_kill: yes
         keep_volumes: no
 
-    - name: Run the new container
+    - name: Run the new container and keep it alive
       community.docker.docker_container:
         name: "{{ container_name }}"
         image: "{{ image }}"
         state: started
         ports:
           - "5000:5000"
+        command: "tail -f /dev/null"
+
