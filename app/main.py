@@ -24,8 +24,8 @@ def main():
                 print(f"ln({x}) = {calculator.ln(x)}")
             elif choice == "4":
                 x = float(input("Enter base x: "))
-                b = float(input("Enter exponent b: "))
-                print(f"{x}^{b} = {calculator.power(x, b)}")
+                a = float(input("Enter exponent a: "))
+                print(f"{x}^{a} = {calculator.power(x, a)}")
             elif choice == "5":
                 print("Goodbye!")
                 break
