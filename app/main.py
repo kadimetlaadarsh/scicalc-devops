@@ -8,7 +8,7 @@ def main():
         print("1) sqrt(x)")
         print("2) factorial(n)")
         print("3) ln(x)")
-        print("4) x^b")
+        print("4) x^a")
         print("5) Exit")
 
         choice = input("Choose (1-5): ").strip()
