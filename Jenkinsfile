@@ -9,6 +9,13 @@ pipeline {
     }
 
     stages {
+        stage('Clean Workspace') {
+            steps {
+                echo "🧹 Cleaning workspace to avoid git corruption..."
+                deleteDir()   // This removes old .git and workspace files safely
+            }
+        }
+
         stage('Checkout') {
             steps { 
                 checkout scm 
