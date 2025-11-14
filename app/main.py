@@ -9,7 +9,7 @@ def main():
         print("2) factorial(n)")
         print("3) ln(x)")
         print("4) x^a")
-        print("5) Exit")
+        print("5) Exit from this")
 
         choice = input("Choose (1-5): ").strip()
         try:
